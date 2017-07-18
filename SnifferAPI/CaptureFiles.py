@@ -41,6 +41,8 @@ globalHeaderString = [
                         ]
 
 captureFilePath = os.path.join(Logger.logFilePath, "capture.pcap")
+#String to hold bytes from incoming packets so they can be accessed globally
+msgStringBytes = []
 
 class CaptureFileHandler:
     def __init__(self, clear = False):
@@ -57,6 +59,10 @@ class CaptureFileHandler:
     def startNewFile(self):
         with open(self.filename, "wb") as f:
             f.write(toString(globalHeaderString))
+
+    def closeCurFile(self):
+        with open(self.filename, "r") as f:
+            f.close()
     
     def doRollover(self):
         try:
@@ -85,6 +91,12 @@ class CaptureFileHandler:
     def writeString(self, msgString):
         with open(self.filename, "ab") as f:
             f.write(msgString)
+        # Might be able to just export msgList from prior nested function, but
+        # eh, this works
+        msgStringBytes[:] = []
+        for c in msgString:
+            #print ord(c)
+            msgStringBytes.append(ord(c))
             
     def writeList(self, msgList):
         self.writeString(toString(msgList))
